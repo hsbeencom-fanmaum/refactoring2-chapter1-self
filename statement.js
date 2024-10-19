@@ -2,24 +2,19 @@ function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `청구 내역 (고객명: ${invoice.customer})\n`;
-  const format = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format;
 
   for (let perf of invoice.performances) {
     const play = plays[perf.playID];
     let thisAmount = calculateAmount(play.type, perf.audience);
     volumeCredits += calculateCredits(play.type, perf.audience);
+    totalAmount += thisAmount;
 
     // 청구 내역을 출력한다.
-    result += `  ${play.name}: ${format(thisAmount / 100)} (${
+    result += `  ${play.name}: ${formatUSD(thisAmount / 100)} (${
       perf.audience
     }석)\n`;
-    totalAmount += thisAmount;
   }
-  result += `총액: ${format(totalAmount / 100)}\n`;
+  result += `총액: ${formatUSD(totalAmount / 100)}\n`;
   result += `적립 포인트: ${volumeCredits}점\n`;
   return result;
 }
@@ -52,6 +47,14 @@ function calculateCredits(type, audience) {
   // 희극 관객 5명마다 추가 포인트를 제공한다.
   if ("comedy" === type) volumeCredits += Math.floor(audience / 5);
   return volumeCredits;
+}
+
+function formatUSD(value) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(value);
 }
 
 module.exports = { statement };
