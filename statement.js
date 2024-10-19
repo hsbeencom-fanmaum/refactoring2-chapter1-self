@@ -1,11 +1,11 @@
 function statement(invoice, plays) {
-  const invoiceGenerator = new InvoiceGenerator(invoice, plays);
-  return invoiceGenerator.renderPlainText();
+  const invoiceGenerator = new PlainTextInvoiceGenerator(invoice, plays);
+  return invoiceGenerator.generate();
 }
 
 function htmlStatement(invoice, plays) {
-  const invoiceGenerator = new InvoiceGenerator(invoice, plays);
-  return invoiceGenerator.renderHtmlText();
+  const invoiceGenerator = new HtmlTextInvoiceGenerator(invoice, plays);
+  return invoiceGenerator.generate();
 }
 
 function calculateAmount(type, audience) {
@@ -50,16 +50,22 @@ class InvoiceGenerator {
   constructor(invoice, plays) {
     this.invoice = invoice;
     this.plays = plays;
-    this.#clearInovice();
+    this._clearInovice();
   }
 
-  #clearInovice() {
+  _clearInovice() {
     this.totalAmount = 0;
     this.volumeCredits = 0;
   }
 
-  renderPlainText() {
-    this.#clearInovice();
+  generate() {
+    throw new Error("잘못된 접근입니다.");
+  }
+}
+
+class PlainTextInvoiceGenerator extends InvoiceGenerator {
+  generate() {
+    this._clearInovice();
     let result = `청구 내역 (고객명: ${this.invoice.customer})\n`;
 
     for (let perf of this.invoice.performances) {
@@ -77,9 +83,11 @@ class InvoiceGenerator {
     result += `적립 포인트: ${this.volumeCredits}점\n`;
     return result;
   }
+}
 
-  renderHtmlText() {
-    this.#clearInovice();
+class HtmlTextInvoiceGenerator extends InvoiceGenerator {
+  generate() {
+    this._clearInovice();
     let result = `<h1>청구 내역 (고객명: ${this.invoice.customer})</h1>\n`;
     result += "<table>\n";
     result += "  <tr><th>연극</th><th>좌석수</th><th>금액</th></tr>\n";
