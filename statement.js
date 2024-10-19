@@ -24,6 +24,10 @@ function calculateAmount(type, audience) {
       }
       thisAmount += 300 * audience;
       break;
+    case "history": // 사극
+      thisAmount = 10000;
+      thisAmount += 1500 * audience;
+      break;
     default:
       throw new Error(`알 수 없는 장르: ${type}`);
   }
@@ -35,6 +39,7 @@ function calculateCredits(type, audience) {
   let volumeCredits = Math.max(audience - 30, 0);
   // 희극 관객 5명마다 추가 포인트를 제공한다.
   if ("comedy" === type) volumeCredits += Math.floor(audience / 5);
+  else if ("history" === type) volumeCredits += audience > 20 ? 10 : 0;
   return volumeCredits;
 }
 
